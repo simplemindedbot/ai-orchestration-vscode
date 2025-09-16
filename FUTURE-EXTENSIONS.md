@@ -49,6 +49,18 @@ While the current architecture focuses on AI coding assistants, VS Code's true p
 - **Go**: Go tools, delve debugger
 - **Rust**: cargo, clippy, rustfmt
 
+## Agent Context Protocol (ACP) Revolution 🔥
+
+### Cross-Editor AI Orchestration
+The emergence of Zed's Agent Context Protocol (ACP) creates a massive opportunity to extend beyond VS Code:
+
+- **Universal AI Coordination**: Orchestrate AI agents across Zed, VS Code, Neovim, and future ACP-supporting editors
+- **Editor-Agnostic Routing**: Route tasks to the best AI agent regardless of which editor it's running in
+- **Standardized Communication**: Leverage ACP's JSON-RPC protocol instead of custom integrations
+- **Broader Agent Ecosystem**: Access Claude Code, Gemini CLI, and custom ACP agents
+
+**Strategic Impact**: Transform from VS Code extension to universal, cross-editor AI orchestration platform.
+
 ## Integration Patterns for Non-AI Tools
 
 ### Task Integration

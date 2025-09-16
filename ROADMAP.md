@@ -40,9 +40,16 @@ This roadmap outlines the evolution from AI tool orchestration to comprehensive 
 
 ### Tool Integration
 - [ ] Production MCP connector framework
+- [ ] **Agent Context Protocol (ACP) connector** 🆕
 - [ ] VS Code extension connector system
 - [ ] CLI tool integration layer
 - [ ] API service connectors
+
+### ACP Integration Strategy 🔥
+- [ ] **ACP Agent Discovery**: Detect ACP-compatible agents (Claude Code, Gemini CLI, custom agents)
+- [ ] **Cross-Editor Support**: Extend orchestration beyond VS Code to Zed, Neovim, and other ACP-supporting editors
+- [ ] **Agent Capability Probing**: Test ACP agent capabilities through standardized protocol
+- [ ] **Multi-Editor Orchestration**: Coordinate agents across different editors in the same workspace
 
 ---
 
