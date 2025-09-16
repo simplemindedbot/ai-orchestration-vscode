@@ -1,0 +1,28 @@
+{
+  "name": "test-copilot-access",
+  "displayName": "Test Copilot Access",
+  "description": "Test programmatic access to GitHub Copilot",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": ["Other"],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "testCopilot.triggerSuggestion",
+        "title": "Test Copilot Suggestion"
+      }
+    ]
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.0.0"
+  }
+}

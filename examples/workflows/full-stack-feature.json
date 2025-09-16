@@ -1,0 +1,488 @@
+{
+  "id": "full-stack-feature",
+  "name": "Full Stack Feature Development",
+  "description": "Complete workflow for implementing a full-stack feature from planning to deployment",
+  "version": "1.0.0",
+  "author": "AI Orchestration System",
+  "tags": ["full-stack", "planning", "implementation", "deployment"],
+
+  "workflow": {
+    "phases": [
+      {
+        "id": "planning",
+        "name": "Architecture Planning",
+        "description": "Design the feature architecture and plan implementation",
+        "parallel": false,
+        "tasks": [
+          {
+            "id": "requirements-analysis",
+            "type": "planning",
+            "description": "Analyze requirements and define feature scope",
+            "preferredTools": ["claude", "gemini"],
+            "requiredCapabilities": ["planning", "analysis"],
+            "inputs": {
+              "userRequirements": "${workflow.input.requirements}",
+              "projectContext": "${context.project}",
+              "existingArchitecture": "${context.architecture}"
+            },
+            "outputs": {
+              "requirementsDoc": "structured requirements document",
+              "featureScope": "detailed scope definition",
+              "constraints": "technical and business constraints"
+            }
+          },
+          {
+            "id": "architecture-design",
+            "type": "planning",
+            "description": "Design system architecture and component structure",
+            "preferredTools": ["claude"],
+            "requiredCapabilities": ["planning", "architecture"],
+            "dependsOn": ["requirements-analysis"],
+            "inputs": {
+              "requirements": "${tasks.requirements-analysis.outputs.requirementsDoc}",
+              "scope": "${tasks.requirements-analysis.outputs.featureScope}",
+              "constraints": "${tasks.requirements-analysis.outputs.constraints}",
+              "technologies": "${context.project.technologies}"
+            },
+            "outputs": {
+              "architecture": "system architecture diagram and description",
+              "components": "component breakdown and responsibilities",
+              "apiDesign": "API endpoints and data models",
+              "databaseSchema": "database schema changes"
+            }
+          },
+          {
+            "id": "implementation-plan",
+            "type": "planning",
+            "description": "Create detailed implementation roadmap",
+            "preferredTools": ["claude"],
+            "requiredCapabilities": ["planning"],
+            "dependsOn": ["architecture-design"],
+            "inputs": {
+              "architecture": "${tasks.architecture-design.outputs.architecture}",
+              "components": "${tasks.architecture-design.outputs.components}",
+              "teamSize": "${workflow.input.teamSize}",
+              "timeline": "${workflow.input.timeline}"
+            },
+            "outputs": {
+              "implementationSteps": "ordered list of implementation tasks",
+              "dependencies": "task dependencies and critical path",
+              "milestones": "key milestones and deliverables",
+              "riskAssessment": "potential risks and mitigation strategies"
+            }
+          }
+        ]
+      },
+
+      {
+        "id": "backend-implementation",
+        "name": "Backend Development",
+        "description": "Implement server-side components and APIs",
+        "parallel": true,
+        "dependsOn": ["planning"],
+        "tasks": [
+          {
+            "id": "database-setup",
+            "type": "implementation",
+            "description": "Create database schema and migrations",
+            "preferredTools": ["copilot", "claude"],
+            "requiredCapabilities": ["code-generation", "database"],
+            "inputs": {
+              "schema": "${tasks.architecture-design.outputs.databaseSchema}",
+              "databaseType": "${context.project.database}",
+              "migrationPattern": "${context.project.migrationPattern}"
+            },
+            "outputs": {
+              "migrations": "database migration files",
+              "models": "data model definitions",
+              "seedData": "initial seed data scripts"
+            }
+          },
+          {
+            "id": "api-implementation",
+            "type": "implementation",
+            "description": "Implement REST API endpoints",
+            "preferredTools": ["copilot", "claude"],
+            "requiredCapabilities": ["code-generation", "api"],
+            "dependsOn": ["database-setup"],
+            "inputs": {
+              "apiDesign": "${tasks.architecture-design.outputs.apiDesign}",
+              "models": "${tasks.database-setup.outputs.models}",
+              "framework": "${context.project.backend.framework}",
+              "authPattern": "${context.project.authPattern}"
+            },
+            "outputs": {
+              "endpoints": "API endpoint implementations",
+              "controllers": "controller classes/functions",
+              "middleware": "authentication and validation middleware",
+              "documentation": "API documentation"
+            }
+          },
+          {
+            "id": "business-logic",
+            "type": "implementation",
+            "description": "Implement core business logic and services",
+            "preferredTools": ["claude", "copilot"],
+            "requiredCapabilities": ["code-generation", "business-logic"],
+            "dependsOn": ["database-setup"],
+            "inputs": {
+              "requirements": "${tasks.requirements-analysis.outputs.requirementsDoc}",
+              "models": "${tasks.database-setup.outputs.models}",
+              "patterns": "${context.project.backend.patterns}"
+            },
+            "outputs": {
+              "services": "business logic service classes",
+              "validators": "data validation logic",
+              "utils": "utility functions and helpers"
+            }
+          }
+        ]
+      },
+
+      {
+        "id": "frontend-implementation",
+        "name": "Frontend Development",
+        "description": "Implement user interface and client-side functionality",
+        "parallel": true,
+        "dependsOn": ["planning"],
+        "tasks": [
+          {
+            "id": "ui-components",
+            "type": "implementation",
+            "description": "Create reusable UI components",
+            "preferredTools": ["copilot", "claude"],
+            "requiredCapabilities": ["code-generation", "ui"],
+            "inputs": {
+              "designSystem": "${context.project.frontend.designSystem}",
+              "framework": "${context.project.frontend.framework}",
+              "componentSpecs": "${tasks.architecture-design.outputs.components}"
+            },
+            "outputs": {
+              "components": "reusable UI component files",
+              "styles": "component stylesheets",
+              "stories": "component documentation/storybook"
+            }
+          },
+          {
+            "id": "pages-views",
+            "type": "implementation",
+            "description": "Implement application pages and views",
+            "preferredTools": ["copilot", "claude"],
+            "requiredCapabilities": ["code-generation", "ui"],
+            "dependsOn": ["ui-components"],
+            "inputs": {
+              "components": "${tasks.ui-components.outputs.components}",
+              "routing": "${context.project.frontend.routing}",
+              "userFlows": "${tasks.requirements-analysis.outputs.requirementsDoc}"
+            },
+            "outputs": {
+              "pages": "page/view component files",
+              "routes": "routing configuration",
+              "navigation": "navigation components"
+            }
+          },
+          {
+            "id": "state-management",
+            "type": "implementation",
+            "description": "Implement client-side state management",
+            "preferredTools": ["claude", "copilot"],
+            "requiredCapabilities": ["code-generation", "state-management"],
+            "inputs": {
+              "statePattern": "${context.project.frontend.stateManagement}",
+              "apiEndpoints": "${tasks.api-implementation.outputs.endpoints}",
+              "dataFlow": "${tasks.architecture-design.outputs.components}"
+            },
+            "outputs": {
+              "stores": "state management stores/reducers",
+              "actions": "action creators and dispatchers",
+              "hooks": "custom hooks for state access",
+              "types": "TypeScript type definitions"
+            }
+          }
+        ]
+      },
+
+      {
+        "id": "integration",
+        "name": "System Integration",
+        "description": "Connect frontend and backend, implement end-to-end functionality",
+        "parallel": false,
+        "dependsOn": ["backend-implementation", "frontend-implementation"],
+        "tasks": [
+          {
+            "id": "api-integration",
+            "type": "implementation",
+            "description": "Connect frontend to backend APIs",
+            "preferredTools": ["copilot", "claude"],
+            "requiredCapabilities": ["code-generation", "integration"],
+            "inputs": {
+              "apiEndpoints": "${tasks.api-implementation.outputs.endpoints}",
+              "frontendStores": "${tasks.state-management.outputs.stores}",
+              "errorHandling": "${context.project.errorHandling}"
+            },
+            "outputs": {
+              "apiClients": "API client/service files",
+              "errorHandlers": "error handling logic",
+              "interceptors": "request/response interceptors"
+            }
+          },
+          {
+            "id": "data-flow-testing",
+            "type": "testing",
+            "description": "Test end-to-end data flow and integration",
+            "preferredTools": ["claude", "copilot"],
+            "requiredCapabilities": ["testing", "integration"],
+            "dependsOn": ["api-integration"],
+            "inputs": {
+              "integrationPoints": "${tasks.api-integration.outputs}",
+              "testFramework": "${context.project.testing.framework}",
+              "testStrategy": "${context.project.testing.strategy}"
+            },
+            "outputs": {
+              "integrationTests": "integration test suites",
+              "e2eTests": "end-to-end test scenarios",
+              "testData": "test data and fixtures"
+            }
+          }
+        ]
+      },
+
+      {
+        "id": "quality-assurance",
+        "name": "Quality Assurance",
+        "description": "Code review, testing, and quality checks",
+        "parallel": true,
+        "dependsOn": ["integration"],
+        "tasks": [
+          {
+            "id": "code-review",
+            "type": "analysis",
+            "description": "Comprehensive code review and quality analysis",
+            "preferredTools": ["claude", "gemini"],
+            "requiredCapabilities": ["analysis", "code-review"],
+            "inputs": {
+              "codebase": "${context.workspace.files}",
+              "standards": "${context.project.codingStandards}",
+              "security": "${context.project.securityRequirements}"
+            },
+            "outputs": {
+              "reviewFindings": "code review findings and recommendations",
+              "qualityMetrics": "code quality metrics and scores",
+              "improvements": "suggested improvements and refactoring opportunities"
+            }
+          },
+          {
+            "id": "security-analysis",
+            "type": "security",
+            "description": "Security vulnerability analysis and recommendations",
+            "preferredTools": ["claude", "security-tools"],
+            "requiredCapabilities": ["security", "analysis"],
+            "inputs": {
+              "codebase": "${context.workspace.files}",
+              "dependencies": "${context.project.dependencies}",
+              "securityStandards": "${context.project.securityStandards}"
+            },
+            "outputs": {
+              "vulnerabilities": "identified security vulnerabilities",
+              "recommendations": "security improvement recommendations",
+              "compliance": "compliance check results"
+            }
+          },
+          {
+            "id": "performance-testing",
+            "type": "testing",
+            "description": "Performance testing and optimization analysis",
+            "preferredTools": ["claude", "performance-tools"],
+            "requiredCapabilities": ["testing", "performance"],
+            "inputs": {
+              "application": "${tasks.integration.outputs}",
+              "performanceTargets": "${context.project.performanceTargets}",
+              "loadPatterns": "${context.project.expectedLoad}"
+            },
+            "outputs": {
+              "performanceMetrics": "performance test results",
+              "bottlenecks": "identified performance bottlenecks",
+              "optimizations": "performance optimization recommendations"
+            }
+          }
+        ]
+      },
+
+      {
+        "id": "deployment",
+        "name": "Deployment Setup",
+        "description": "Configure deployment pipeline and infrastructure",
+        "parallel": false,
+        "dependsOn": ["quality-assurance"],
+        "tasks": [
+          {
+            "id": "infrastructure",
+            "type": "deployment",
+            "description": "Set up deployment infrastructure",
+            "preferredTools": ["amazon-q", "claude"],
+            "requiredCapabilities": ["deployment", "infrastructure"],
+            "inputs": {
+              "cloudProvider": "${context.project.cloud.provider}",
+              "scalingRequirements": "${context.project.scaling}",
+              "environment": "${workflow.input.deploymentEnvironment}"
+            },
+            "outputs": {
+              "infrastructure": "infrastructure as code files",
+              "configs": "deployment configuration files",
+              "secrets": "secret management setup"
+            }
+          },
+          {
+            "id": "cicd-pipeline",
+            "type": "deployment",
+            "description": "Configure CI/CD pipeline",
+            "preferredTools": ["claude", "amazon-q"],
+            "requiredCapabilities": ["deployment", "cicd"],
+            "dependsOn": ["infrastructure"],
+            "inputs": {
+              "infrastructure": "${tasks.infrastructure.outputs}",
+              "testSuites": "${tasks.data-flow-testing.outputs}",
+              "cicdPlatform": "${context.project.cicd.platform}"
+            },
+            "outputs": {
+              "pipeline": "CI/CD pipeline configuration",
+              "workflows": "automated workflow definitions",
+              "monitoring": "deployment monitoring setup"
+            }
+          },
+          {
+            "id": "deployment-verification",
+            "type": "testing",
+            "description": "Verify deployment and run smoke tests",
+            "preferredTools": ["claude"],
+            "requiredCapabilities": ["testing", "deployment"],
+            "dependsOn": ["cicd-pipeline"],
+            "inputs": {
+              "deployedApplication": "${tasks.cicd-pipeline.outputs}",
+              "smokeTests": "${tasks.data-flow-testing.outputs.e2eTests}",
+              "monitoringSetup": "${tasks.cicd-pipeline.outputs.monitoring}"
+            },
+            "outputs": {
+              "verificationResults": "deployment verification results",
+              "healthChecks": "application health check status",
+              "rollbackPlan": "rollback procedures and scripts"
+            }
+          }
+        ]
+      }
+    ]
+  },
+
+  "inputs": {
+    "requirements": {
+      "type": "string",
+      "description": "Feature requirements and specifications",
+      "required": true
+    },
+    "timeline": {
+      "type": "string",
+      "description": "Project timeline and deadlines",
+      "required": true
+    },
+    "teamSize": {
+      "type": "number",
+      "description": "Number of developers on the team",
+      "default": 1
+    },
+    "deploymentEnvironment": {
+      "type": "string",
+      "description": "Target deployment environment",
+      "enum": ["development", "staging", "production"],
+      "default": "development"
+    }
+  },
+
+  "outputs": {
+    "completedFeature": {
+      "description": "Fully implemented and deployed feature",
+      "includes": [
+        "source code",
+        "tests",
+        "documentation",
+        "deployment configuration",
+        "monitoring setup"
+      ]
+    },
+    "documentation": {
+      "description": "Complete feature documentation",
+      "includes": [
+        "architecture documentation",
+        "API documentation",
+        "deployment guide",
+        "user guide"
+      ]
+    },
+    "qualityReport": {
+      "description": "Quality assurance report",
+      "includes": [
+        "code review results",
+        "security analysis",
+        "performance metrics",
+        "test coverage"
+      ]
+    }
+  },
+
+  "configuration": {
+    "adaptiveRouting": {
+      "enabled": true,
+      "description": "Allow dynamic tool selection based on availability"
+    },
+    "parallelExecution": {
+      "enabled": true,
+      "maxConcurrency": 3,
+      "description": "Enable parallel execution of independent tasks"
+    },
+    "errorHandling": {
+      "strategy": "graceful",
+      "retryAttempts": 2,
+      "description": "How to handle task failures"
+    },
+    "qualityGates": {
+      "enabled": true,
+      "requirements": {
+        "codeReview": "required",
+        "securityScan": "required",
+        "testCoverage": 80,
+        "performanceBaseline": "required"
+      },
+      "description": "Quality gates that must pass before proceeding"
+    }
+  },
+
+  "metadata": {
+    "estimatedDuration": "2-4 weeks",
+    "complexity": "high",
+    "requiredTools": [
+      "claude",
+      "copilot",
+      "amazon-q"
+    ],
+    "optionalTools": [
+      "gemini",
+      "security-tools",
+      "performance-tools"
+    ],
+    "supportedLanguages": [
+      "javascript",
+      "typescript",
+      "python",
+      "java",
+      "csharp"
+    ],
+    "supportedFrameworks": [
+      "react",
+      "vue",
+      "angular",
+      "express",
+      "fastapi",
+      "spring",
+      "asp.net"
+    ]
+  }
+}

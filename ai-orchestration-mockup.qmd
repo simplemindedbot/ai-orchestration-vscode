@@ -1,0 +1,1129 @@
+---
+title: "AI Coding Assistant Orchestration in VS Code"
+subtitle: "Multi-Agent Development Environment Architecture"
+author: "AI Architecture Mockup"
+date: "`r Sys.Date()`"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    code-fold: false
+    mermaid:
+      theme: default
+---
+
+# Executive Summary
+
+This document outlines an **adaptive architecture** for orchestrating multiple AI coding assistants through VS Code's extension API, creating a unified multi-agent development environment where specialized AI tools collaborate on complex coding tasks.
+
+## Core Concept
+
+VS Code acts as the central orchestration hub with **dynamic tool discovery**, coordinating between whatever AI assistants and tools are available in the user's environment:
+
+- **GitHub Copilot** (via VS Code Extension API) for code completion and suggestions
+- **Claude Code MCP** (via MCP server) for planning and complex reasoning
+- **Amazon Q** (via AWS Toolkit extension) for AWS-specific implementations
+- **Gemini CLI** (via command line interface) for large codebase analysis
+- **Custom MCP servers** (via Model Context Protocol) for domain expertise
+- **Any other discovered tools** through hybrid integration methods
+
+## Key Innovation: Hybrid Integration Architecture
+
+Unlike static orchestration systems, this architecture uses multiple integration methods:
+
+- **🔌 MCP Server Access** - For Claude Code, custom tools, future MCP-enabled assistants
+- **🧩 VS Code Extension API** - For Copilot, Amazon Q, workspace integration
+- **🌐 Direct API Calls** - For services without MCP or extension interfaces
+- **💻 CLI Integration** - For command-line tools like Gemini CLI
+- **🔍 Dynamic Discovery** - Automatically adapts to available tools
+
+# Architecture Overview
+
+```{mermaid}
+graph TB
+    User[👤 Developer] --> VSCode[VS Code IDE Hub]
+
+    subgraph "VS Code Orchestration Core"
+        VSCode --> Orchestrator[AI Orchestrator Extension]
+        Orchestrator --> Discovery[Dynamic Tool Discovery]
+        Orchestrator --> AdaptiveRouter[Adaptive Task Router]
+        Orchestrator --> ContextManager[Context Manager]
+        Orchestrator --> ConflictResolver[Conflict Resolver]
+        Discovery --> CapabilityProbe[Capability Prober]
+    end
+
+    subgraph "Hybrid Integration Layer"
+        AdaptiveRouter --> MCPConnector[MCP Connector]
+        AdaptiveRouter --> ExtensionConnector[Extension Connector]
+        AdaptiveRouter --> APIConnector[API Connector]
+        AdaptiveRouter --> CLIConnector[CLI Connector]
+    end
+
+    subgraph "Discovered AI Tools"
+        MCPConnector --> Claude[Claude Code MCP<br/>🔌 MCP Server]
+        MCPConnector --> CustomMCP[Custom MCP Servers<br/>🔌 MCP Protocol]
+        ExtensionConnector --> Copilot[GitHub Copilot<br/>🧩 VS Code Extension]
+        ExtensionConnector --> AmazonQ[Amazon Q<br/>🧩 AWS Toolkit Extension]
+        CLIConnector --> Gemini[Gemini CLI<br/>💻 Command Line]
+        APIConnector --> DirectAPI[Other AI Services<br/>🌐 REST APIs]
+    end
+
+    subgraph "VS Code Integration"
+        ContextManager --> WorkspaceAPI[Workspace API]
+        ContextManager --> EditorAPI[Editor API]
+        ContextManager --> TerminalAPI[Terminal API]
+        ContextManager --> ExtensionAPI[Extension API]
+    end
+
+    subgraph "Discovery Targets"
+        Discovery --> ExtensionScan[Extension Scanner]
+        Discovery --> MCPPortScan[MCP Port Scanner]
+        Discovery --> CLIProbe[CLI Tool Probe]
+        Discovery --> ConfigReader[Config File Reader]
+    end
+
+    style User fill:#e1f5fe
+    style VSCode fill:#f3e5f5
+    style Orchestrator fill:#fff3e0
+    style Discovery fill:#e8f5e8
+    style AdaptiveRouter fill:#fff8e1
+    style Copilot fill:#e8f5e8
+    style Claude fill:#fff8e1
+    style AmazonQ fill:#fce4ec
+    style Gemini fill:#e3f2fd
+```
+
+# Adaptive Orchestration Workflow
+
+## 1. Dynamic Discovery and Adaptive Routing
+
+The orchestrator first discovers available tools, then dynamically routes tasks based on what's actually installed:
+
+```{mermaid}
+flowchart TD
+    Startup[System Startup] --> Discovery[Dynamic Tool Discovery]
+
+    Discovery --> ExtensionScan[Scan VS Code Extensions]
+    Discovery --> MCPScan[Probe MCP Servers]
+    Discovery --> CLIScan[Test CLI Tools]
+    Discovery --> ConfigScan[Read Config Files]
+
+    ExtensionScan --> CapabilityTest[Test Capabilities]
+    MCPScan --> CapabilityTest
+    CLIScan --> CapabilityTest
+    ConfigScan --> CapabilityTest
+
+    CapabilityTest --> BuildMatrix[Build Capability Matrix]
+    BuildMatrix --> AdaptiveRouter[Configure Adaptive Router]
+
+    Request[Developer Request] --> TaskAnalyzer[Task Analyzer]
+    TaskAnalyzer --> AvailabilityCheck{Check Tool<br/>Availability}
+
+    AvailabilityCheck -->|Available| OptimalRoute[Route to Best Available Tools]
+    AvailabilityCheck -->|Unavailable| FallbackRoute[Use Fallback Strategy]
+
+    OptimalRoute --> ParallelExecution[Execute in Parallel]
+    FallbackRoute --> SequentialExecution[Execute Sequentially]
+
+    ParallelExecution --> ConflictResolution[Resolve Conflicts]
+    SequentialExecution --> ConflictResolution
+
+    ConflictResolution --> Integration[Integrate Results]
+    Integration --> UserPresentation[Present to User]
+
+    style Startup fill:#e1f5fe
+    style Discovery fill:#fff3e0
+    style BuildMatrix fill:#f3e5f5
+    style Request fill:#e1f5fe
+    style Integration fill:#e8f5e8
+```
+
+## 2. Multi-Agent Collaboration with Discovery
+
+```{mermaid}
+sequenceDiagram
+    participant Dev as 👤 Developer
+    participant VSC as VS Code Hub
+    participant Disc as Discovery Engine
+    participant Orch as Orchestrator
+    participant Claude as Claude MCP
+    participant Copilot as GitHub Copilot
+    participant AQ as Amazon Q
+    participant Gemini as Gemini CLI
+
+    Dev->>VSC: "Build a FastAPI app with AWS deployment"
+    VSC->>Disc: Check available tools
+
+    Note over Disc: Dynamic capability check
+    Disc->>Claude: Ping MCP server (available ✅)
+    Disc->>Copilot: Check extension (available ✅)
+    Disc->>AQ: Check AWS Toolkit (available ✅)
+    Disc->>Gemini: Test CLI command (unavailable ❌)
+
+    Disc->>Orch: Available tools: Claude, Copilot, Amazon Q
+    Orch->>VSC: Present adapted plan (3 agents)
+
+    Note over Orch: Task decomposition with available tools
+    Orch->>Claude: "Plan FastAPI architecture + code review"
+    Orch->>AQ: "Design AWS deployment strategy"
+
+    par Parallel Planning
+        Claude-->>Orch: Architecture + review insights
+    and
+        AQ-->>Orch: Deployment config + Infrastructure
+    end
+
+    Orch->>VSC: Present unified plan to user
+    VSC->>Dev: Show combined architecture + deployment plan
+    Dev->>VSC: "Approve and implement"
+
+    Note over Orch: Adaptive implementation coordination
+    Orch->>Claude: "Generate FastAPI boilerplate"
+    Claude-->>Orch: Core app structure + routes
+
+    Orch->>Copilot: "Complete implementation details"
+    Copilot-->>Orch: Detailed code completion
+
+    Orch->>AQ: "Generate AWS CDK/Terraform"
+    AQ-->>Orch: Infrastructure as code
+
+    Note over Orch: Claude compensates for missing Gemini
+    Orch->>Claude: "Perform code review and best practices check"
+    Claude-->>Orch: Code review + suggestions
+
+    Orch->>VSC: Integrate all outputs
+    VSC->>Dev: Present complete solution with note about adaptations
+
+    Note over Dev,Claude: System adapted to available tools
+```
+
+# Adaptive Implementation Architecture
+
+## 1. Dynamic Tool Discovery Engine
+
+```typescript
+// Core discovery and capability management
+interface DiscoveredTool {
+  id: string;
+  name: string;
+  type: 'mcp-server' | 'vscode-extension' | 'cli-tool' | 'api-service';
+  capabilities: ToolCapabilities;
+  connector: ToolConnector;
+  endpoint?: string;
+  isHealthy: boolean;
+  lastChecked: Date;
+}
+
+interface ToolCapabilities {
+  tasks: string[]; // ['planning', 'completion', 'analysis', 'deployment']
+  languages: string[]; // ['typescript', 'python', 'rust']
+  integrations: string[]; // ['aws', 'github', 'docker']
+  commands: string[]; // VS Code commands available
+  contextSize?: number; // Maximum context size
+  rateLimit?: RateLimit;
+}
+
+class ToolDiscovery {
+  private discoveredTools: Map<string, DiscoveredTool> = new Map();
+  private capabilityMatrix: CapabilityMatrix = new CapabilityMatrix();
+
+  async initializeDiscovery(): Promise<void> {
+    console.log('🔍 Starting dynamic tool discovery...');
+
+    // Parallel discovery across all integration types
+    const [extensions, mcpServers, cliTools] = await Promise.all([
+      this.discoverVSCodeExtensions(),
+      this.discoverMCPServers(),
+      this.discoverCLITools()
+    ]);
+
+    // Build unified capability matrix
+    await this.buildCapabilityMatrix([...extensions, ...mcpServers, ...cliTools]);
+
+    console.log(`✅ Discovered ${this.discoveredTools.size} tools`);
+  }
+
+  private async discoverVSCodeExtensions(): Promise<DiscoveredTool[]> {
+    const discovered: DiscoveredTool[] = [];
+
+    // Known AI assistant extensions with capability signatures
+    const knownAssistants = {
+      'GitHub.copilot': {
+        expectedCapabilities: ['code-completion', 'inline-suggestions', 'chat'],
+        testCommands: ['editor.action.inlineSuggest.trigger']
+      },
+      'AmazonWebServices.aws-toolkit-vscode': {
+        expectedCapabilities: ['deployment', 'infrastructure', 'cloud-config'],
+        testCommands: ['aws.quickStart']
+      },
+      'Continue.continue': {
+        expectedCapabilities: ['chat', 'code-editing', 'completion'],
+        testCommands: ['continue.quickEdit']
+      },
+      'Codeium.codeium': {
+        expectedCapabilities: ['completion', 'chat', 'search'],
+        testCommands: ['codeium.openChat']
+      }
+    };
+
+    for (const [extensionId, config] of Object.entries(knownAssistants)) {
+      const ext = vscode.extensions.getExtension(extensionId);
+      if (ext?.isActive) {
+        const capabilities = await this.probeExtensionCapabilities(ext, config);
+        discovered.push({
+          id: extensionId,
+          name: ext.packageJSON.displayName,
+          type: 'vscode-extension',
+          capabilities,
+          connector: new VSCodeExtensionConnector(ext),
+          isHealthy: true,
+          lastChecked: new Date()
+        });
+      }
+    }
+
+    return discovered;
+  }
+
+  private async discoverMCPServers(): Promise<DiscoveredTool[]> {
+    const discovered: DiscoveredTool[] = [];
+
+    // Check common MCP server ports and configuration
+    const discoveryTargets = [
+      ...this.getCommonMCPPorts(),
+      ...await this.readMCPConfigurations()
+    ];
+
+    for (const target of discoveryTargets) {
+      try {
+        const serverInfo = await this.probeMCPServer(target.endpoint);
+        if (serverInfo) {
+          discovered.push({
+            id: serverInfo.name || target.endpoint,
+            name: serverInfo.displayName || `MCP Server (${target.endpoint})`,
+            type: 'mcp-server',
+            capabilities: await this.probeMCPCapabilities(target.endpoint),
+            connector: new MCPConnector(target.endpoint),
+            endpoint: target.endpoint,
+            isHealthy: true,
+            lastChecked: new Date()
+          });
+        }
+      } catch (error) {
+        console.log(`❌ MCP server at ${target.endpoint} unavailable`);
+      }
+    }
+
+    return discovered;
+  }
+
+  private async discoverCLITools(): Promise<DiscoveredTool[]> {
+    const discovered: DiscoveredTool[] = [];
+
+    // Test for known CLI tools
+    const cliCandidates = [
+      { command: 'gemini', name: 'Gemini CLI', capabilities: ['analysis', 'large-context'] },
+      { command: 'cursor', name: 'Cursor CLI', capabilities: ['completion', 'chat'] },
+      { command: 'gh', name: 'GitHub CLI', capabilities: ['github-integration', 'repository'] }
+    ];
+
+    for (const candidate of cliCandidates) {
+      if (await this.testCLIAvailability(candidate.command)) {
+        const capabilities = await this.probeCLICapabilities(candidate.command);
+        discovered.push({
+          id: candidate.command,
+          name: candidate.name,
+          type: 'cli-tool',
+          capabilities,
+          connector: new CLIConnector(candidate.command),
+          isHealthy: true,
+          lastChecked: new Date()
+        });
+      }
+    }
+
+    return discovered;
+  }
+}
+```
+
+## 2. Adaptive Task Router
+
+```typescript
+interface RoutingPlan {
+  primary: DiscoveredTool;
+  supporting: DiscoveredTool[];
+  fallbacks: DiscoveredTool[];
+  degraded?: boolean;
+  explanation: string;
+}
+
+class AdaptiveTaskRouter {
+  constructor(
+    private availableTools: Map<string, DiscoveredTool>,
+    private userPreferences: OrchestrationConfig
+  ) {}
+
+  async routeTask(task: Task): Promise<RoutingPlan> {
+    // 1. Find all tools capable of handling this task
+    const capableTools = this.findCapableTools(task);
+
+    if (capableTools.length === 0) {
+      return this.createFallbackPlan(task);
+    }
+
+    // 2. Apply user preferences and tool rankings
+    const rankedTools = this.rankToolsByPreference(capableTools, task);
+
+    // 3. Check for complementary tools for multi-agent collaboration
+    const complementaryTools = this.findComplementaryTools(rankedTools[0], task);
+
+    // 4. Verify tool health before assignment
+    const healthyTools = await this.filterHealthyTools([...rankedTools, ...complementaryTools]);
+
+    return {
+      primary: healthyTools[0],
+      supporting: complementaryTools.filter(t => healthyTools.includes(t)),
+      fallbacks: healthyTools.slice(1),
+      explanation: this.explainRoutingDecision(healthyTools[0], task)
+    };
+  }
+
+  private findCapableTools(task: Task): DiscoveredTool[] {
+    return Array.from(this.availableTools.values()).filter(tool => {
+      // Check if tool has required capabilities
+      const hasRequiredCapability = tool.capabilities.tasks.some(capability =>
+        this.taskMatchesCapability(task, capability)
+      );
+
+      // Check language compatibility if relevant
+      const languageCompatible = !task.language ||
+        tool.capabilities.languages.includes(task.language) ||
+        tool.capabilities.languages.includes('*');
+
+      // Check if tool is currently healthy
+      const isHealthy = tool.isHealthy &&
+        (Date.now() - tool.lastChecked.getTime()) < 300000; // 5 minutes
+
+      return hasRequiredCapability && languageCompatible && isHealthy;
+    });
+  }
+
+  private rankToolsByPreference(tools: DiscoveredTool[], task: Task): DiscoveredTool[] {
+    return tools.sort((a, b) => {
+      // Factor in user preferences
+      const aPreference = this.getUserPreferenceScore(a, task);
+      const bPreference = this.getUserPreferenceScore(b, task);
+
+      // Factor in capability fitness
+      const aFitness = this.calculateCapabilityFitness(a, task);
+      const bFitness = this.calculateCapabilityFitness(b, task);
+
+      // Factor in performance metrics
+      const aPerformance = this.getPerformanceScore(a);
+      const bPerformance = this.getPerformanceScore(b);
+
+      // Weighted combination
+      const aScore = (aPreference * 0.4) + (aFitness * 0.4) + (aPerformance * 0.2);
+      const bScore = (bPreference * 0.4) + (bFitness * 0.4) + (bPerformance * 0.2);
+
+      return bScore - aScore;
+    });
+  }
+
+  private createFallbackPlan(task: Task): RoutingPlan {
+    // Find the most general-purpose tool available
+    const generalTools = Array.from(this.availableTools.values()).filter(tool =>
+      tool.capabilities.tasks.includes('general-purpose') ||
+      tool.capabilities.tasks.length >= 3 // Multi-capability tools
+    );
+
+    if (generalTools.length === 0) {
+      throw new Error(`No suitable tools available for task: ${task.type}`);
+    }
+
+    return {
+      primary: generalTools[0],
+      supporting: [],
+      fallbacks: generalTools.slice(1),
+      degraded: true,
+      explanation: `No specialized tools available. Using ${generalTools[0].name} as general-purpose fallback.`
+    };
+  }
+}
+```
+
+## 3. Hybrid Tool Connectors
+
+```typescript
+// Abstract base for all tool connectors
+abstract class ToolConnector {
+  abstract connect(): Promise<Connection>;
+  abstract invoke(task: Task, context: WorkspaceContext): Promise<ToolResponse>;
+  abstract testHealth(): Promise<boolean>;
+  abstract disconnect(): Promise<void>;
+}
+
+// MCP Server connector
+class MCPConnector extends ToolConnector {
+  constructor(private endpoint: string) {
+    super();
+  }
+
+  async connect(): Promise<MCPConnection> {
+    const client = new MCPClient(this.endpoint);
+    await client.initialize();
+    return new MCPConnection(client);
+  }
+
+  async invoke(task: Task, context: WorkspaceContext): Promise<ToolResponse> {
+    const connection = await this.connect();
+
+    return await connection.request({
+      method: 'tools/call',
+      params: {
+        name: this.mapTaskToMCPTool(task),
+        arguments: {
+          task: task.description,
+          context: this.serializeContext(context),
+          type: task.type
+        }
+      }
+    });
+  }
+
+  async testHealth(): Promise<boolean> {
+    try {
+      const connection = await this.connect();
+      await connection.ping();
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+}
+
+// VS Code Extension connector
+class VSCodeExtensionConnector extends ToolConnector {
+  constructor(private extension: vscode.Extension<any>) {
+    super();
+  }
+
+  async invoke(task: Task, context: WorkspaceContext): Promise<ToolResponse> {
+    switch (task.type) {
+      case 'completion':
+        return await this.invokeCompletion(task, context);
+      case 'chat':
+        return await this.invokeChat(task, context);
+      default:
+        return await this.invokeGeneric(task, context);
+    }
+  }
+
+  private async invokeCompletion(task: Task, context: WorkspaceContext): Promise<ToolResponse> {
+    // Trigger inline suggestions
+    await vscode.commands.executeCommand('editor.action.inlineSuggest.trigger');
+
+    // For Copilot, we can also use chat participant
+    if (this.extension.id === 'GitHub.copilot') {
+      return await vscode.commands.executeCommand(
+        'github.copilot.interactiveEditor.explain',
+        task.description
+      );
+    }
+
+    return { success: true, data: 'Completion triggered' };
+  }
+
+  async testHealth(): Promise<boolean> {
+    return this.extension.isActive;
+  }
+}
+
+// CLI Tool connector
+class CLIConnector extends ToolConnector {
+  constructor(private command: string) {
+    super();
+  }
+
+  async invoke(task: Task, context: WorkspaceContext): Promise<ToolResponse> {
+    const args = this.buildCommandArgs(task, context);
+
+    return new Promise((resolve, reject) => {
+      const process = spawn(this.command, args);
+      let stdout = '';
+      let stderr = '';
+
+      process.stdout.on('data', (data) => {
+        stdout += data.toString();
+      });
+
+      process.stderr.on('data', (data) => {
+        stderr += data.toString();
+      });
+
+      process.on('close', (code) => {
+        if (code === 0) {
+          resolve({ success: true, data: stdout });
+        } else {
+          reject(new Error(`CLI command failed: ${stderr}`));
+        }
+      });
+    });
+  }
+
+  async testHealth(): Promise<boolean> {
+    try {
+      const result = await this.invoke(
+        { type: 'test', description: '--version' } as Task,
+        {} as WorkspaceContext
+      );
+      return result.success;
+    } catch (error) {
+      return false;
+    }
+  }
+}
+```
+
+## 4. Configuration and Runtime Adaptation
+
+```typescript
+interface OrchestrationConfig {
+  discovery: {
+    enableAutoDiscovery: boolean;
+    scanPorts: number[];
+    extensionWhitelist: string[];
+    mcpConfigPaths: string[];
+    discoveryInterval: number; // milliseconds
+  };
+  routing: {
+    preferredTools: Record<string, string[]>; // task -> tool preferences
+    fallbackBehavior: 'graceful' | 'fail-fast';
+    parallelismLevel: 'conservative' | 'aggressive';
+    maxConcurrentTasks: number;
+  };
+  capabilities: {
+    enableCapabilityTesting: boolean;
+    cacheDuration: number;
+    retestInterval: number;
+    healthCheckInterval: number;
+  };
+  user: {
+    allowFallbacks: boolean;
+    requireConfirmation: boolean;
+    showRoutingExplanations: boolean;
+  };
+}
+
+class RuntimeAdaptation {
+  constructor(
+    private toolDiscovery: ToolDiscovery,
+    private router: AdaptiveTaskRouter,
+    private config: OrchestrationConfig
+  ) {}
+
+  async initializeMonitoring(): Promise<void> {
+    // Watch for extension changes
+    vscode.extensions.onDidChange(async () => {
+      console.log('🔄 Extensions changed, rediscovering tools...');
+      await this.toolDiscovery.rediscoverTools();
+      this.router.updateAvailableTools(this.toolDiscovery.getDiscoveredTools());
+    });
+
+    // Periodic health checks
+    setInterval(async () => {
+      await this.performHealthChecks();
+    }, this.config.capabilities.healthCheckInterval);
+
+    // Performance monitoring
+    this.startPerformanceMonitoring();
+  }
+
+  private async performHealthChecks(): Promise<void> {
+    const tools = this.toolDiscovery.getDiscoveredTools();
+
+    for (const [id, tool] of tools) {
+      try {
+        const isHealthy = await tool.connector.testHealth();
+        if (!isHealthy && tool.isHealthy) {
+          console.log(`⚠️ Tool ${tool.name} became unhealthy`);
+          tool.isHealthy = false;
+          await this.handleToolFailure(tool);
+        } else if (isHealthy && !tool.isHealthy) {
+          console.log(`✅ Tool ${tool.name} recovered`);
+          tool.isHealthy = true;
+        }
+        tool.lastChecked = new Date();
+      } catch (error) {
+        console.log(`❌ Health check failed for ${tool.name}: ${error}`);
+        tool.isHealthy = false;
+      }
+    }
+  }
+
+  private async handleToolFailure(failedTool: DiscoveredTool): Promise<void> {
+    // Recompute routing strategies without the failed tool
+    await this.router.recomputeRoutingStrategies();
+
+    // Notify user if this affects their current workflow
+    if (this.isToolCriticalForActiveTask(failedTool)) {
+      vscode.window.showWarningMessage(
+        `${failedTool.name} is unavailable. Adapting workflow to use alternative tools.`,
+        'Show Details'
+      ).then(selection => {
+        if (selection === 'Show Details') {
+          this.showAdaptationDetails(failedTool);
+        }
+      });
+    }
+  }
+
+  private startPerformanceMonitoring(): Promise<void> {
+    // Track response times, success rates, user satisfaction
+    return Promise.resolve();
+  }
+}
+```
+
+## 5. User Experience with Discovery
+
+```typescript
+class DiscoveryUX {
+  async showDiscoveryResults(discoveredTools: Map<string, DiscoveredTool>): Promise<void> {
+    const quickPick = vscode.window.createQuickPick();
+    quickPick.title = 'AI Tools Discovery Results';
+    quickPick.placeholder = 'Review discovered AI assistants and tools';
+
+    quickPick.items = Array.from(discoveredTools.values()).map(tool => ({
+      label: `${this.getTypeIcon(tool.type)} ${tool.name}`,
+      description: this.formatCapabilities(tool.capabilities),
+      detail: `${tool.type} • ${tool.isHealthy ? '✅ Healthy' : '❌ Unhealthy'}`,
+      tool
+    }));
+
+    quickPick.onDidChangeSelection(async (items) => {
+      if (items.length > 0) {
+        await this.showToolDetails(items[0].tool);
+      }
+    });
+
+    quickPick.show();
+  }
+
+  private getTypeIcon(type: string): string {
+    switch (type) {
+      case 'mcp-server': return '🔌';
+      case 'vscode-extension': return '🧩';
+      case 'cli-tool': return '💻';
+      case 'api-service': return '🌐';
+      default: return '🔧';
+    }
+  }
+
+  private formatCapabilities(capabilities: ToolCapabilities): string {
+    const tasks = capabilities.tasks.slice(0, 3).join(', ');
+    const more = capabilities.tasks.length > 3 ? ` +${capabilities.tasks.length - 3} more` : '';
+    return `${tasks}${more}`;
+  }
+
+  async showRoutingExplanation(plan: RoutingPlan, task: Task): Promise<void> {
+    const message = `
+**Task**: ${task.description}
+**Primary Tool**: ${plan.primary.name}
+**Reason**: ${plan.explanation}
+${plan.supporting.length > 0 ? `**Supporting**: ${plan.supporting.map(t => t.name).join(', ')}` : ''}
+${plan.degraded ? '⚠️ **Degraded Mode**: Some preferred tools unavailable' : ''}
+    `;
+
+    vscode.window.showInformationMessage(
+      'AI Orchestration Plan',
+      { modal: true, detail: message },
+      'Proceed',
+      'Choose Different Tools'
+    ).then(async (selection) => {
+      if (selection === 'Choose Different Tools') {
+        await this.showToolSelectionDialog(task);
+      }
+    });
+  }
+}
+```
+
+## Conflict Resolution and Integration
+
+```typescript
+// Handling conflicting suggestions from multiple AI assistants
+class ConflictResolver {
+  async resolveConflicts(
+    responses: AssistantResponse[]
+  ): Promise<IntegratedResponse> {
+    const conflicts = this.detectConflicts(responses);
+
+    if (conflicts.length === 0) {
+      return this.mergeResponses(responses);
+    }
+
+    // Resolution strategies
+    for (const conflict of conflicts) {
+      const resolution = await this.resolveConflict(conflict);
+      this.applyResolution(responses, resolution);
+    }
+
+    return this.mergeResponses(responses);
+  }
+
+  private async resolveConflict(conflict: Conflict): Promise<Resolution> {
+    switch (conflict.type) {
+      case 'code-style':
+        return this.resolveStyleConflict(conflict);
+
+      case 'architecture':
+        return this.resolveArchitecturalConflict(conflict);
+
+      case 'implementation':
+        return this.resolveImplementationConflict(conflict);
+
+      default:
+        return this.defaultResolution(conflict);
+    }
+  }
+
+  private resolveStyleConflict(conflict: Conflict): Resolution {
+    // Prefer project's existing style conventions
+    const projectStyle = this.analyzeProjectStyle();
+    return {
+      winner: this.findClosestMatch(conflict.options, projectStyle),
+      rationale: 'Matches existing project conventions'
+    };
+  }
+
+  private async resolveArchitecturalConflict(conflict: Conflict): Promise<Resolution> {
+    // Use Claude for complex architectural decisions
+    const claudeAssessment = await this.consultAssistant('claude', {
+      type: 'architectural-review',
+      options: conflict.options,
+      context: conflict.context
+    });
+
+    return {
+      winner: claudeAssessment.recommendation,
+      rationale: claudeAssessment.reasoning
+    };
+  }
+}
+```
+
+# Task Type Specializations
+
+## 1. Architecture and Planning Tasks
+
+**Primary:** Claude Code MCP
+**Supporting:** Gemini CLI (for large codebase analysis)
+
+```typescript
+interface PlanningTask extends Task {
+  type: 'planning';
+  scope: 'feature' | 'refactor' | 'new-project';
+  technologies: string[];
+  constraints: ProjectConstraint[];
+}
+
+// Example routing logic
+if (task.type === 'planning') {
+  const assignments = [
+    { assistant: 'claude', role: 'primary', weight: 0.8 },
+    { assistant: 'gemini', role: 'supporting', weight: 0.2 }
+  ];
+
+  const claudeResponse = await claude.generateArchitecture(task);
+  const geminiInsights = await gemini.analyzeCodebase(task.context);
+
+  return this.integrateArchitecturalPlan(claudeResponse, geminiInsights);
+}
+```
+
+## 2. Code Completion and Implementation
+
+**Primary:** GitHub Copilot
+**Supporting:** Claude MCP (for complex logic)
+
+```typescript
+interface CompletionTask extends Task {
+  type: 'completion';
+  trigger: 'inline' | 'explicit' | 'context-aware';
+  language: string;
+  complexity: 'simple' | 'medium' | 'complex';
+}
+
+// Intelligent completion routing
+if (task.complexity === 'simple') {
+  return await copilot.getInlineCompletion(task);
+} else {
+  // Use Claude for complex implementations
+  const claudePlan = await claude.planImplementation(task);
+  const copilotDetails = await copilot.implementDetails(claudePlan);
+  return this.combineImplementations(claudePlan, copilotDetails);
+}
+```
+
+## 3. AWS and Cloud Integration
+
+**Primary:** Amazon Q
+**Supporting:** Claude MCP (for integration patterns)
+
+```typescript
+interface DeploymentTask extends Task {
+  type: 'deployment';
+  platform: 'aws' | 'azure' | 'gcp';
+  services: string[];
+  environment: 'dev' | 'staging' | 'prod';
+}
+
+// AWS-specific orchestration
+if (task.platform === 'aws') {
+  const awsConfig = await amazonQ.generateInfrastructure(task);
+  const integrationPattern = await claude.designIntegration(task, awsConfig);
+
+  return {
+    infrastructure: awsConfig,
+    applicationChanges: integrationPattern.appChanges,
+    deploymentStrategy: integrationPattern.deployment
+  };
+}
+```
+
+# User Experience Design
+
+## Command Palette Integration
+
+```typescript
+// VS Code commands for orchestration
+const commands = [
+  {
+    command: 'aiOrchestrator.planFeature',
+    title: 'AI: Plan New Feature',
+    category: 'AI Orchestration'
+  },
+  {
+    command: 'aiOrchestrator.refactorCode',
+    title: 'AI: Intelligent Refactoring',
+    category: 'AI Orchestration'
+  },
+  {
+    command: 'aiOrchestrator.deployToCloud',
+    title: 'AI: Design Cloud Deployment',
+    category: 'AI Orchestration'
+  },
+  {
+    command: 'aiOrchestrator.reviewArchitecture',
+    title: 'AI: Multi-Agent Code Review',
+    category: 'AI Orchestration'
+  }
+];
+```
+
+## Status Bar and Progress Tracking
+
+```{mermaid}
+graph LR
+    Request[User Request] --> Parse[Parsing...]
+    Parse --> Route[Routing Tasks...]
+    Route --> Execute[Executing: Claude, Copilot, Amazon Q]
+    Execute --> Integrate[Integrating Results...]
+    Integrate --> Present[✅ Complete]
+
+    style Request fill:#e1f5fe
+    style Execute fill:#fff3e0
+    style Present fill:#e8f5e8
+```
+
+## Conflict Resolution UI
+
+When conflicts arise, VS Code presents a resolution interface:
+
+```typescript
+interface ConflictResolutionUI {
+  showConflictDialog(conflict: Conflict): Promise<UserChoice> {
+    return vscode.window.showQuickPick([
+      {
+        label: `Option A: ${conflict.optionA.assistant}`,
+        description: conflict.optionA.rationale,
+        detail: conflict.optionA.preview
+      },
+      {
+        label: `Option B: ${conflict.optionB.assistant}`,
+        description: conflict.optionB.rationale,
+        detail: conflict.optionB.preview
+      },
+      {
+        label: 'Merge Both',
+        description: 'Attempt intelligent merge',
+        detail: 'Let AI combine both approaches'
+      }
+    ]);
+  }
+}
+```
+
+# Dynamic Discovery Benefits
+
+## 1. True Adaptability
+- **Works with any AI tool combination** - No hardcoded assumptions
+- **Graceful degradation** - System adapts when tools are unavailable
+- **Future-proof** - Automatically discovers new tools as they're installed
+- **User environment respect** - Uses only what the user has chosen to install
+
+## 2. Hybrid Integration Flexibility
+- **Multiple connection methods** - MCP, Extensions, APIs, CLI
+- **Protocol agnostic** - Can integrate any tool regardless of interface
+- **Best-of-breed approach** - Use most appropriate connection method per tool
+- **Fallback strategies** - Alternative integration methods when primary fails
+
+## 3. Intelligent Capability Matching
+- **Dynamic capability testing** - Probes actual tool capabilities vs assumptions
+- **Context-aware routing** - Considers language, complexity, user preferences
+- **Health monitoring** - Real-time adaptation to tool availability
+- **Performance optimization** - Routes based on actual tool performance metrics
+
+## 4. Enhanced User Experience
+- **Transparent operations** - User sees what tools are available and why
+- **Configuration flexibility** - Granular control over discovery and routing
+- **Seamless integration** - Tools work together regardless of underlying protocols
+- **Minimal setup required** - System discovers and configures itself
+
+# Challenges and Adaptive Solutions
+
+## 1. Discovery Complexity
+- **Challenge**: Reliably detecting and testing diverse tool types
+- **Solution**: Multi-layered discovery with fallback detection methods
+- **Mitigation**: Capability caching and incremental discovery updates
+
+## 2. Dynamic Routing Overhead
+- **Challenge**: Real-time capability assessment may slow task execution
+- **Solution**: Background health monitoring and capability caching
+- **Optimization**: Predictive routing based on user patterns
+
+## 3. Integration Protocol Diversity
+- **Challenge**: Managing multiple connection types (MCP, Extensions, APIs, CLI)
+- **Solution**: Abstract connector pattern with protocol-specific implementations
+- **Benefit**: Isolation of protocol complexity from orchestration logic
+
+## 4. Tool Reliability and Fallbacks
+- **Challenge**: Tools may become unavailable during execution
+- **Solution**: Real-time health checks and automatic failover
+- **Strategy**: Graceful degradation with user notification
+
+## 5. Configuration Complexity
+- **Challenge**: Many configuration options may overwhelm users
+- **Solution**: Intelligent defaults with progressive configuration exposure
+- **Approach**: Auto-configuration based on discovered tools with manual override
+
+# Future Extensions and Evolution
+
+## 1. Machine Learning-Enhanced Discovery
+```typescript
+interface IntelligentDiscovery {
+  predictOptimalToolCombinations(task: Task, context: ProjectContext): Promise<ToolCombination>;
+  learnFromUserFeedback(routing: RoutingPlan, outcome: TaskOutcome): void;
+  adaptToUserWorkPatterns(patterns: WorkflowPattern[]): void;
+  suggestMissingCapabilities(projectNeeds: ProjectAnalysis): ToolSuggestion[];
+}
+```
+
+## 2. Ecosystem Integration Expansion
+```typescript
+interface EcosystemConnector {
+  discoverCloudAIServices(cloudProvider: 'aws' | 'gcp' | 'azure'): Promise<DiscoveredTool[]>;
+  integrateIDEPlugins(ide: 'jetbrains' | 'vim' | 'emacs'): Promise<void>;
+  connectRemoteAIAgents(endpoint: string): Promise<RemoteAgent>;
+  enableCrossProjectOrchestration(workspace: WorkspaceGroup): void;
+}
+```
+
+## 3. Advanced Workflow Orchestration
+```typescript
+interface WorkflowOrchestration {
+  createCustomWorkflows(workflow: WorkflowDefinition): void;
+  chainMultiStepTasks(tasks: Task[]): Promise<ChainedExecution>;
+  enableConditionalRouting(conditions: RoutingCondition[]): void;
+  supportWorkflowTemplates(domain: 'web' | 'mobile' | 'ml' | 'devops'): void;
+}
+```
+
+## 4. Collaborative AI Networks
+```typescript
+interface CollaborativeNetwork {
+  shareCapabilityInsights(network: DeveloperNetwork): void;
+  crowdsourceToolRecommendations(task: Task): Promise<CommunityRecommendation>;
+  enablePeerOrchestrationSharing(team: Team): void;
+  contributToToolEffectivenessDatabase(metrics: ToolMetrics): void;
+}
+```
+
+# Conclusion: The Adaptive AI Orchestration Revolution
+
+This **dynamic discovery-driven architecture** transforms VS Code into a truly adaptive multi-agent development environment. Unlike static orchestration systems, this approach creates a **living ecosystem** that evolves with the user's tool choices and automatically optimizes for their specific development environment.
+
+## Revolutionary Aspects
+
+### 1. **True Tool Agnosticism**
+The system works with **any combination** of AI tools - from GitHub Copilot and Claude MCP to future tools not yet invented. No hardcoded assumptions means unlimited extensibility.
+
+### 2. **Hybrid Integration Model**
+By supporting **multiple integration protocols** (MCP servers, VS Code extensions, CLI tools, APIs), the system can leverage the best connection method for each tool while providing a unified orchestration layer.
+
+### 3. **Dynamic Capability Adaptation**
+Rather than assuming tool capabilities, the system **actively probes and tests** what each tool can actually do, adapting routing strategies in real-time based on availability and performance.
+
+### 4. **Seamless User Experience**
+Despite the underlying complexity, users experience a **single, intelligent interface** that automatically coordinates multiple AI assistants without requiring manual tool switching or complex configuration.
+
+## Key Innovations
+
+**🔍 Dynamic Discovery Engine**
+- Auto-detects available AI tools across all integration types
+- Probes actual capabilities vs theoretical ones
+- Adapts in real-time to tool availability changes
+
+**🧠 Adaptive Task Router**
+- Routes tasks based on actual tool availability and performance
+- Provides graceful degradation when preferred tools are unavailable
+- Learns from user preferences and feedback
+
+**🔌 Protocol-Agnostic Connectors**
+- Abstracts away the complexity of different integration methods
+- Enables consistent orchestration regardless of underlying protocols
+- Future-proofs against new integration standards
+
+**⚡ Real-Time Adaptation**
+- Monitors tool health and adjusts routing accordingly
+- Provides transparent explanations for orchestration decisions
+- Enables user override and customization at any level
+
+## Transformative Impact
+
+This architecture enables a **new paradigm of AI-assisted development**:
+
+- **From Tool Silos to Unified Ecosystems** - Multiple AI assistants work as a coordinated team
+- **From Static Configuration to Dynamic Adaptation** - System evolves with user's tool choices
+- **From Manual Coordination to Intelligent Automation** - AI assistants automatically collaborate
+- **From One-Size-Fits-All to Personalized Intelligence** - Adapts to individual developer preferences and workflows
+
+## Success Factors for Implementation
+
+1. **🎯 Intelligent Discovery** - Robust detection across all integration types
+2. **⚖️ Balanced Routing** - User preferences + capability fitness + performance metrics
+3. **🔄 Graceful Adaptation** - Seamless handling of tool availability changes
+4. **👤 User Transparency** - Clear explanations and override capabilities
+5. **🚀 Performance Optimization** - Efficient parallel execution and caching
+
+## The Future of AI Development Tools
+
+This orchestration model represents the **next evolutionary step** in AI-assisted development - moving from fragmented individual tools to **collaborative AI ecosystems** that amplify developer productivity while remaining transparent, configurable, and adaptable to any development environment.
+
+The result is a development experience where **the right AI expertise is always available for the right task**, seamlessly coordinated through a familiar interface, regardless of which specific tools the developer has chosen to install.
+
+---
+
+**Vision Statement**: *Transform every VS Code instance into a personalized, adaptive AI development command center that automatically discovers, coordinates, and optimizes whatever AI tools the developer chooses to use - creating a development experience that's more than the sum of its parts.*
