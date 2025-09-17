@@ -45,11 +45,14 @@ This roadmap outlines the evolution from AI tool orchestration to comprehensive 
 - [ ] CLI tool integration layer
 - [ ] API service connectors
 
-### ACP Integration Strategy 🔥
-- [ ] **ACP Agent Discovery**: Detect ACP-compatible agents (Claude Code, Gemini CLI, custom agents)
-- [ ] **Cross-Editor Support**: Extend orchestration beyond VS Code to Zed, Neovim, and other ACP-supporting editors
-- [ ] **Agent Capability Probing**: Test ACP agent capabilities through standardized protocol
-- [ ] **Multi-Editor Orchestration**: Coordinate agents across different editors in the same workspace
+### ACP Integration Strategy 🔥 *Early Adopter Advantage*
+- [ ] **ACP Protocol Research**: Study ACP specifications and implement basic connector
+- [ ] **Zed/Neovim Testing**: Test orchestration with existing ACP-supporting editors
+- [ ] **VS Code Bridge Development**: Create ACP bridge for VS Code (before native support)
+- [ ] **Agent Ecosystem Engagement**: Build relationships with Claude Code, Gemini CLI teams
+- [ ] **Cross-Editor Proof-of-Concept**: Demonstrate orchestration across Zed + VS Code (via bridge)
+
+**Strategic Timing**: Position for when VS Code gets ACP support (community extension or native)
 
 ---
 

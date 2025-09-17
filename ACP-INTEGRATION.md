@@ -15,10 +15,13 @@ Zed Industries' Agent Context Protocol (ACP) represents a breakthrough for our o
 - **Language support**: TypeScript and Rust libraries available
 
 ### Current Ecosystem (2025)
-- **Zed Editor**: Native ACP support
+- **Zed Editor**: Native ACP support (flagship implementation)
 - **Neovim**: Code Companion plugin provides ACP support
 - **Agents**: Claude Code, Gemini CLI, custom agents
-- **VS Code**: No native support yet (opportunity!)
+- **VS Code**: No native support yet - **major opportunity!**
+  - Could get community extension for ACP support
+  - Microsoft might adopt ACP directly in future releases
+  - Our orchestration system could be the bridge solution
 
 ## Strategic Opportunities
 
@@ -199,11 +202,37 @@ class ACPConnector extends ToolConnector {
 - Developer C (Neovim user): Reviews using shared orchestration preferences
 ```
 
-## Strategic Impact
+## Strategic Impact & Timing
 
+### Near-Term Opportunity (2025-2026)
+ACP is still early days, which creates a **first-mover advantage**:
+
+- **Be ready when VS Code adds ACP support** (via extension or native integration)
+- **Position as the bridge solution** while ecosystem develops
+- **Build relationships with ACP agent developers** early
+- **Influence ACP standards** through early adoption and feedback
+
+### VS Code ACP Integration Scenarios
+
+**Scenario 1: Community Extension**
+- Community builds VS Code ACP extension
+- Our orchestration integrates immediately via ACP connector
+- Instant cross-editor capability for VS Code users
+
+**Scenario 2: Microsoft Native Adoption**
+- Microsoft adds native ACP support to VS Code
+- Our system becomes cross-editor compatible automatically
+- Validates our early bet on ACP standards
+
+**Scenario 3: Bridge Solution**
+- Our orchestration acts as ACP bridge for VS Code
+- Users get ACP benefits before official support
+- Positions us as thought leader in cross-editor AI coordination
+
+### Long-Term Vision
 This ACP integration could position our orchestration system as the **universal AI agent coordinator** for developers, regardless of their editor choice. It transforms us from a VS Code extension into a **platform-agnostic development intelligence hub**.
 
-**Vision**: Any developer, using any ACP-supporting editor, can benefit from intelligent AI agent orchestration - making our system the standard way developers coordinate AI assistance across their entire toolkit.
+**Strategic Positioning**: Be the **standard orchestration layer** that works everywhere ACP agents exist, making us indispensable as the ecosystem evolves.
 
 ---
 
